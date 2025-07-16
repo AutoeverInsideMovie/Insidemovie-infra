@@ -1,0 +1,40 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: insidemovie
+    ports:
+      - "3306:3306"
+
+  # redis:
+  #   image: redis:alpine
+  #   container_name: redis
+  #   ports:
+  #     - "6379:6379"
+
+  backend:
+    container_name: backend
+    image: ssafysong/inside-movie:be
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/insidemovie
+      SPRING_CONFIG_IMPORT: optional:file:/config/application-key.yml
+    depends_on:
+      - mysql
+
+  frontend:
+    container_name: frontend
+    image: ssafysong/inside-movie:fe
+    ports:
+      - "5173:80"
+
+  # ai:
+  #   image: inside-movie/ai:latest
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD: 1234
+  #   ports:
+  #     - "8000:8000"
